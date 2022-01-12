@@ -1,0 +1,318 @@
+from tkinter import *
+from tkinter import ttk
+from tkcalendar import *
+from PIL import ImageTk, Image
+import mysql.connector
+
+
+#Home Screen
+
+root = Tk()
+root.title("Airline Reservation")
+root.geometry("550x600")
+root.resizable(False, False)
+b_g= ImageTk.PhotoImage(Image.open("bg1.jpg"))
+bg_label = Label(root, image=b_g).grid(row = 0, column = 0, columnspan=800,
+rowspan=800)
+L = []
+cost = {"ATL": 14489, "PEK": 4824, "LAX": 14500, "DXB": 2693, "HND": 6650,
+"LHR": 8053, "PVG": 4920,"HKG": 3978, "DEL": 2078, "BOM": 1016, "BLR": 0}
+
+#New Registeration
+
+def new():
+def get_date():
+global date
+date=cal.get_date()
+window_new=Toplevel()
+window_new.geometry("600x800")
+bg2label = Label(window_new, image=b_g).grid(row = 0, column = 0,
+columnspan=800, rowspan=800)
+labelnew_1 = Label(window_new, text="Enter the required
+details",bg="light blue",font=("Helvetica",24),fg="black")
+labelnew_1.grid(row=5,column=1)
+
+#Name
+
+labelnew_2 = Label(window_new,font=(24) ,text="Name:",bg="light
+blue",fg="black")
+labelnew_2.grid(row=35,column=0)
+boxnew_1= Entry(window_new, width = 40, font=(24))
+boxnew_1.grid(row=35,column=1)
+
+#Address
+
+labelnew_3 = Label(window_new,font=(24) ,text="Address:",bg="light
+blue",fg="black")
+labelnew_3.grid(row=65,column=0)
+boxnew_2= Entry(window_new, width = 40, font=(24))
+boxnew_2.grid(row=65,column=1)
+
+'''
+#Date of journey
+labelnew_4 = Label(window_new,font=(24) ,text="Date of
+Journey:",bg="green",fg="white")
+labelnew_4.grid(row=7,column=0)
+boxnew_3= Entry(window_new)
+boxnew_3.grid(row=7,column=1)
+'''
+
+
+airports = ["ATL", "PEK", "LAX", "DXB", "HND", "LHR", "PVG","HKG",
+"DEL", "BOM", "BLR"]
+
+#Source
+
+labelnew_5 = Label(window_new,font=(24) ,text="Source:",bg="light
+blue",fg="black")
+labelnew_5.grid(row=95,column=0)
+source_combo = ttk.Combobox(window_new, value=airports, width=10)
+source_combo.grid(row=95,column=1)
+source_combo.current(0)
+#Destination
+labelnew_6 = Label(window_new,font=(24) ,text="Destination:",bg="light
+blue",fg="black")
+labelnew_6.grid(row=125,column=0)
+dest_combo= ttk.Combobox(window_new, value=airports, width=10)
+dest_combo.grid(row=125,column=1)
+dest_combo.current(0)
+
+
+#Number of tickets
+
+labelnew_8 = Label(window_new,font=(24),text="Number of
+tickets",bg="light blue",fg="black")
+labelnew_8.grid(row=155,column=0)
+options = [1,2,3,4,5,6,7,8,9,10]
+combo = ttk.Combobox(window_new, value = options)
+combo.grid(row=155,column=1)
+combo.current(0)
+
+#Selecting class
+labelnew_7 = Label(window_new,font=(24),text="Select class",bg="light
+blue",fg="black")
+labelnew_7.grid(row=185,column=0)
+v = StringVar()
+rbutton_1= Radiobutton(window_new,text="first",variable=v,value="First
+Class") #radio buttons for class selection
+rbutton_2=Radiobutton(window_new,text="buisness",variable=v,value="Business
+Class")
+rbutton_3=Radiobutton(window_new,text="economy",variable=v,value="Economy
+Class")
+rbutton_1.grid(row=185,column=1)
+rbutton_2.grid(row=195, column=1)
+rbutton_3.grid(row=205, column=1)
+
+#Date of journey
+
+labelnew_4 = Label(window_new,font=(24) ,text="Date of
+Journey:",bg="light blue",fg="black")
+labelnew_4.grid(row=235,column=0)
+cal = Calendar(window_new,text="get date")
+cal.grid(row=235,column=1)
+buttondate = Button(window_new,text="Set date",command=get_date)
+buttondate.grid(row=255,column=1)
+def confirm():
+
+#connecting sql to python
+
+mydb = mysql.connector.connect(user='root',
+password='',host='localhost',database='airline')
+mycursor = mydb.cursor()
+name=boxnew_1.get()
+global namex
+namex = str(name)
+L.append(namex)
+address=boxnew_2.get()
+global adrx
+adrx = str(address)
+L.append(adrx)
+'''doj=boxnew_3.get()
+global dojx
+dojx = str(doj)
+L.append(dojx)
+'''
+datex = str(date)
+L.append(datex)
+
+'''
+source=boxnew_4.get()
+global sourcex
+sourcex = str(source)
+L.append(sourcex)
+'''
+source=source_combo.get()
+global sourcex
+sourcex = str(source)
+L.append(sourcex)
+#destination=boxnew_5.get()
+destination=dest_combo.get()
+global destx
+destx = str(destination)
+L.append(str(destx))
+number = combo.get()
+global numberx
+numberx = int(number)
+L.append(numberx)
+class1=v.get()
+classx = str(class1)
+global class_val
+if classx == "First Class":
+class_val = 6000
+elif classx == "Business Class":
+class_val = 4000
+else:
+class_val = 2000
+L.append(classx)
+cust = (L)
+insert="insert into
+pdata(custname,addr,jrdate,source,destination,num_p,class)values(%s,%s,%s,%
+s,%s,%s,%s)"
+mycursor.execute(insert,cust)
+mydb.commit()
+mydb.close()
+
+#Confirm Button
+con_button = Button(window_new, text="Confirm", command = confirm,
+width = 10, font=(16))
+con_button.grid(row = 285, column = 1)
+def next1():
+def price(cls,n,sou,des):
+dist = abs(des-sou)
+pri = dist*cls*n/1000
+return pri
+total = price(class_val, numberx, cost[sourcex], cost[destx])
+
+labelxd=Label(window_new,text="Your total amount
+is:",font=(28),fg="white",bg="green")
+labelxd.grid(row=300,column=1)
+labelxd1=Label(window_new,text=str(total), fg = "white",
+bg="green")
+labelxd1.grid(row=310,column=1)
+buttonextra=Button(window_new,text="Confirm
+payment",command=window_2)
+buttonextra.grid(row=330,column=1)
+
+#button takes you to next window, see window_2 function
+buttonnew_1 =Button(window_new, text="Next",command=next1, width = 10,
+font=(16))
+buttonnew_1.grid(row=285,column=2)
+
+def window_2(): #window after name,address etc
+windownew_2=Toplevel()
+windownew_2.geometry("400x300")
+windownew_2.configure(bg="light blue")
+labelfinal= Label(windownew_2,text="Payment was successful.\n Thank
+you for choosing Fly High!!",font=("Helvetica",16),fg="black",bg="light
+blue")
+labelfinal.pack()
+buttonfinal=Button(windownew_2,text="Order Summary",command=view)
+#redirect to view page that you created
+buttonfinal.pack(pady = 100)
+
+'''
+View Registration
+'''
+def view():
+
+#Creating a connection with SQL
+
+mydb = mysql.connector.connect(user='root',
+password='',host='localhost',database='airline')
+
+#Defining Cursor variable, which holds values of all extracted data as
+a list of tuples
+
+mycursor = mydb.cursor()
+
+#Creating the window
+
+viewscreen = Toplevel()
+viewscreen.title("My Bookings")
+viewscreen.geometry("1000x400")
+viewscreen.configure(background = 'navy')
+
+#Defining heading label
+
+heading_label = Label(viewscreen, text='Current Bookings:', fg =
+'black', bg='cyan', font=("Helvtica", 24))
+heading_label.grid(row = 0, column = 0, columnspan = 5)
+
+#Data Extraction and assigning variables
+
+mycursor.execute("select * from pdata")
+
+#Uses the cursor to
+execute through SQL connection
+
+bookings_data = (mycursor.fetchall()) #fetchall fetches all
+tuples in the cursor and assignes it to the variable bookings_data
+n = mycursor.rowcount
+
+#Tells no. of rows (tuples) currently
+in the cursor
+
+#Labelling the column headings
+
+heading1 = Label(viewscreen, text='Customer Name', fg='white',
+bg='navy', font=("Helvtica", 16))
+heading2 = Label(viewscreen, text='Address', fg='white', bg='navy',
+font=("Helvtica", 16))
+heading3 = Label(viewscreen, text='Journey Date', fg='white',
+bg='navy', font=("Helvtica", 16))
+heading4 = Label(viewscreen, text='Source', fg='white', bg='navy',
+font=("Helvtica", 16))
+heading5 = Label(viewscreen, text='Destination', fg='white', bg='navy',
+font=("Helvtica", 16))
+heading6 = Label(viewscreen, text='Passengers', fg='white', bg='navy',
+font=("Helvtica", 16))
+heading7 = Label(viewscreen, text='Class', fg='white', bg='navy',
+font=("Helvtica", 16))
+heading1.grid(row = 1, column = 0, sticky=W)
+heading2.grid(row = 1, column = 1, sticky=W)
+heading3.grid(row = 1, column = 2, sticky=W)
+heading4.grid(row = 1, column = 3, sticky=W)
+heading5.grid(row = 1, column = 4, sticky=W)
+heading6.grid(row = 1, column = 5, sticky=W)
+heading7.grid(row = 1, column = 6, sticky=W)
+
+#Labelling extracted data
+
+for i in range(n):
+row = bookings_data[i] #row var contains values of the i
+th tuple in the cursor list stored in bookings_data. Basically holds the
+value of one row
+for j in range(len(row)):
+row_data = row[j] #row_data var contains the value at
+the jth position of the ith tuple(row). Basically holds the value of one
+cell
+
+#Labelling
+
+row_data_label = Label(viewscreen, text=row_data, fg='white',
+bg='navy', font=("Helvtica", 15))
+row_data_label.grid(row = (i+2)*3, column =j , sticky=W,
+rowspan = 3)
+mydb.close()
+label_1 = Label(root, text="Welcome to Fly High Airlines!",bg="light
+blue",fg="black",font=("Helvetica",30)).grid(row=30, column = 30 )
+
+#New reservation
+
+label_2 = Label(root, text="1) To make a new reservation click
+here",bg="light blue",fg="black",font=("Helvetica",20)).grid(row = 80,
+column = 30)
+button_1 =
+Button(root,text="New",command=new,height="2",width="15",font=(16)).grid(ro
+7w = 110, column = 30)
+
+#View reservation
+
+label_2 = Label(root, text="2) To view current reservation click
+here",bg="light blue",fg="black",font=("Helvetica",20)).grid(row = 160,
+column = 30)
+button_2 =
+Button(root,text="View",command=view,height="2",width="15",font=(16)).grid(
+row=190, column = 30)
+
+root.mainloop()
