@@ -8,7 +8,6 @@ discounts, seats, and payments.
 
 Airline reservation systems are part of the so-
 calledpassenger service systems, which are
-
 applications supporting the direct contact with the
 passenger. Airlines reservation system eventually
 evolved into the computer reservations system. A
